@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>경기도 예산대비 채무비율 2009–2024</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDEDE8;
+    --card:#F7F7F4;
+    --ink:#16191C;
+    --ink-soft:#5B6167;
+    --ink-faint:#9AA0A6;
+    --rule:#D2D2CB;
+    --gyeonggi:#8B1E3F;
+    --mean:#2F5D50;
+    --median:#8E9AA3;
+    --band-crisis:#C8B8A0;
+    --band-caution:#DCD5C7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR',system-ui,sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    padding:clamp(20px,4vw,56px);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:960px;margin:0 auto}
+
+  header{margin-bottom:36px;border-bottom:1px solid var(--rule);padding-bottom:24px}
+  .eyebrow{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:500;margin-bottom:14px;
+  }
+  h1{
+    font-family:'Nanum Myeongjo',serif;font-weight:800;
+    font-size:clamp(28px,4.6vw,44px);line-height:1.18;letter-spacing:-.01em;
+    margin-bottom:12px;
+  }
+  .standfirst{
+    font-size:15px;color:var(--ink-soft);font-weight:300;max-width:60ch;
+  }
+  .standfirst b{font-weight:500;color:var(--ink)}
+
+  .controls{display:flex;gap:8px;margin:28px 0 14px;flex-wrap:wrap}
+  button{
+    font-family:inherit;font-size:12.5px;font-weight:500;
+    padding:8px 15px;border:1px solid var(--rule);background:transparent;
+    color:var(--ink-soft);border-radius:2px;cursor:pointer;
+    transition:background .16s,color .16s,border-color .16s;
+  }
+  button:hover{border-color:var(--ink-faint)}
+  button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+  button:focus-visible{outline:2px solid var(--gyeonggi);outline-offset:2px}
+
+  .card{background:var(--card);border:1px solid var(--rule);padding:clamp(14px,2.6vw,26px);border-radius:2px}
+  .card + .card{margin-top:16px}
+  .card-label{
+    font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-faint);font-weight:500;margin-bottom:16px;
+  }
+  svg{display:block;width:100%;height:auto;overflow:visible}
+
+  .legend{display:flex;gap:22px;flex-wrap:wrap;margin-top:18px;padding-top:16px;border-top:1px solid var(--rule)}
+  .lg{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft)}
+  .swatch{width:22px;height:0;border-top-width:2.5px;border-top-style:solid}
+
+  .notes{
+    margin-top:36px;padding-top:22px;border-top:1px solid var(--rule);
+    font-size:13px;color:var(--ink-soft);font-weight:300;
+  }
+  .notes p{margin-bottom:9px;max-width:74ch}
+  .notes b{font-weight:500;color:var(--ink)}
+  .src{margin-top:18px;font-size:11.5px;color:var(--ink-faint)}
+
+  text{font-family:'IBM Plex Sans KR',sans-serif}
+  .ax{font-size:11px;fill:var(--ink-faint);font-weight:400}
+  .band-lbl{font-size:10.5px;font-weight:500;letter-spacing:.04em}
+  .val-lbl{font-size:11px;font-weight:600;fill:var(--gyeonggi)}
+  .ann{font-size:11.5px;fill:var(--ink-soft);font-weight:400}
+  .ann-b{font-size:11.5px;fill:var(--ink);font-weight:600}
+  @media (prefers-reduced-motion:no-preference){
+    .anim{animation:draw 1.1s ease-out both}
+    @keyframes draw{from{stroke-dasharray:1400;stroke-dashoffset:1400}to{stroke-dashoffset:0}}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">지방재정법 시행령 §65④2호 · 예산대비 채무비율</div>
+  <h1>경기도는 법정 기준에서<br>얼마나 떨어져 있나</h1>
+  <p class="standfirst">광역 본청 기준 2009–2024년 시계열. 회색 띠는 지방재정법 시행령이 정한 <b>재정주의단체(25% 초과)</b>와 <b>재정위기단체(40% 초과)</b> 문턱이다. 16년간 17개 시도 중 이 지표로 40%를 넘은 사례는 <b>없다</b>.</p>
+</header>
+
+<div class="controls">
+  <button id="btn-legal" aria-pressed="true">법정 기준 포함</button>
+  <button id="btn-data" aria-pressed="false">데이터 범위만</button>
+</div>
+
+<div class="card">
+  <div class="card-label">연도별 예산대비 채무비율 (%)</div>
+  <svg id="chart" viewBox="0 0 900 470" role="img" aria-label="경기도 예산대비 채무비율 시계열 차트"></svg>
+  <div class="legend">
+    <span class="lg"><span class="swatch" style="border-top-color:var(--gyeonggi)"></span>경기 본청</span>
+    <span class="lg"><span class="swatch" style="border-top-color:var(--mean);border-top-style:dashed"></span>17개 시도 평균</span>
+    <span class="lg"><span class="swatch" style="border-top-color:var(--median);border-top-style:dotted"></span>중앙값</span>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-label">17개 시도 중 순위 (높은 쪽이 1위)</div>
+  <svg id="rank" viewBox="0 0 900 190" role="img" aria-label="경기도 연도별 채무비율 순위"></svg>
+</div>
+
+<div class="notes">
+  <p><b>U자 궤적.</b> 2013년 20.13%(5위)에서 2020년 4.53%(17위)까지 떨어졌다가 2024년 11.95%로 절반쯤 되돌아왔다. 단조 추세가 아니다.</p>
+  <p><b>순위는 상대 위치다.</b> 같은 기간 전국 평균도 22.07%(2011)에서 11.77%(2020)로 함께 떨어졌다. 경기의 순위 하락은 경기만 좋아진 결과가 아니라 전국이 개선되는 와중에 더 빨리 개선된 결과다. 2023–24년 순위 회복도 전국 평균이 같이 오르는 국면이라, 순위만 보고 재정 악화로 읽으면 오독이다.</p>
+  <p><b>2009–2011은 N=16.</b> 세종시가 2012년 출범이라 이전 데이터가 존재하지 않는다. 결측이 아니라 미존재이므로 보간하지 않았다. 이 3년의 순위는 16개 기준으로 읽어야 한다.</p>
+  <p><b>이 지표 하나로 결론을 내릴 수 없다.</b> 법정 판정 지표는 6개이며 여기서 검증한 것은 그중 하나다. 통합재정수지비율·채무상환비 비율·공기업 부채비율은 미확인이고, 분기 기준 지표 2개(지방세징수액·금고잔액)는 공개 데이터가 없어 계산 불가다. 확정 데이터는 2024년까지이므로 2025–26년 상황은 이 차트에 포함되지 않는다.</p>
+  <p class="src">출처: 행정안전부 지방재정365 예산대비채무비율 OpenAPI · 산정기준 예산 최종, 총계 기준, 통합회계(일반회계+공기업특별회계+기타특별회계+기금) · 판정 기준: 지방재정법 시행령 [시행 2026.1.2.] §65④2호, §65의2②2호, §65의3①2호 · 수집일 2026-08-12</p>
+</div>
+
+</div>
+
+<script>
+const D=[
+ {y:2009,g:12.08,m:18.70,md:15.31,r:11,n:16},
+ {y:2010,g:13.69,m:19.39,md:16.09,r:12,n:16},
+ {y:2011,g:19.65,m:22.07,md:20.23,r:10,n:16},
+ {y:2012,g:18.89,m:21.64,md:19.11,r:10,n:17},
+ {y:2013,g:20.13,m:19.30,md:16.98,r:5, n:17},
+ {y:2014,g:18.94,m:18.38,md:15.62,r:6, n:17},
+ {y:2015,g:16.46,m:16.40,md:14.77,r:6, n:17},
+ {y:2016,g:13.39,m:14.85,md:13.62,r:10,n:17},
+ {y:2017,g:10.74,m:13.74,md:13.77,r:14,n:17},
+ {y:2018,g:8.98, m:12.92,md:13.23,r:14,n:17},
+ {y:2019,g:6.63, m:11.88,md:11.92,r:16,n:17},
+ {y:2020,g:4.53, m:11.77,md:11.69,r:17,n:17},
+ {y:2021,g:6.28, m:13.09,md:12.48,r:17,n:17},
+ {y:2022,g:9.12, m:13.21,md:12.08,r:16,n:17},
+ {y:2023,g:11.61,m:13.69,md:12.90,r:12,n:17},
+ {y:2024,g:11.95,m:14.38,md:13.51,r:11,n:17}
+];
+
+const W=900,H=470,M={t:26,r:96,b:44,l:52};
+const iw=W-M.l-M.r, ih=H-M.t-M.b;
+let yMax=45;
+
+const X=i=>M.l+(i/(D.length-1))*iw;
+const Y=v=>M.t+ih-(v/yMax)*ih;
+const el=(n,a)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',n);
+  for(const k in a)e.setAttribute(k,a[k]);return e;};
+
+function render(){
+  const s=document.getElementById('chart');
+  s.innerHTML='';
+  const legal = yMax>25;
+
+  // threshold bands
+  if(legal){
+    s.appendChild(el('rect',{x:M.l,y:Y(yMax),width:iw,height:Y(40)-Y(yMax),
+      fill:'var(--band-crisis)',opacity:.5}));
+    s.appendChild(el('rect',{x:M.l,y:Y(40),width:iw,height:Y(25)-Y(40),
+      fill:'var(--band-caution)',opacity:.55}));
+
+    [[40,'재정위기단체 40% 초과'],[25,'재정주의·재정진단 25% 초과']].forEach(([v,t])=>{
+      s.appendChild(el('line',{x1:M.l,x2:M.l+iw,y1:Y(v),y2:Y(v),
+        stroke:'#8A7F6B',"stroke-width":1,"stroke-dasharray":"5 3"}));
+      const lb=el('text',{x:M.l+iw+8,y:Y(v)+4,fill:'#7A6F5C'});
+      lb.setAttribute('class','band-lbl');lb.textContent=t;s.appendChild(lb);
+    });
+
+    // historic max marker
+    s.appendChild(el('line',{x1:M.l,x2:M.l+iw,y1:Y(38.63),y2:Y(38.63),
+      stroke:'var(--ink-faint)',"stroke-width":1,"stroke-dasharray":"2 4"}));
+    const hm=el('text',{x:M.l+6,y:Y(38.63)-7});
+    hm.setAttribute('class','ann');
+    hm.textContent='16년 최고치 38.63 (대구 2009) — 위기 기준 미달';
+    s.appendChild(hm);
+  }
+
+  // y grid
+  const step = legal?10:5;
+  for(let v=0;v<=yMax;v+=step){
+    s.appendChild(el('line',{x1:M.l,x2:M.l+iw,y1:Y(v),y2:Y(v),
+      stroke:'var(--rule)',"stroke-width":1,opacity:legal&&v>=25?0:1}));
+    const t=el('text',{x:M.l-11,y:Y(v)+4,"text-anchor":"end"});
+    t.setAttribute('class','ax');t.textContent=v;s.appendChild(t);
+  }
+
+  // x labels
+  D.forEach((d,i)=>{
+    if(i%2===0||i===D.length-1){
+      const t=el('text',{x:X(i),y:M.t+ih+22,"text-anchor":"middle"});
+      t.setAttribute('class','ax');t.textContent=d.y;s.appendChild(t);
+    }
+  });
+
+  const path=k=>D.map((d,i)=>(i?'L':'M')+X(i)+' '+Y(d[k])).join(' ');
+
+  s.appendChild(el('path',{d:path('md'),fill:'none',stroke:'var(--median)',
+    "stroke-width":1.5,"stroke-dasharray":"1 4","stroke-linecap":"round"}));
+  s.appendChild(el('path',{d:path('m'),fill:'none',stroke:'var(--mean)',
+    "stroke-width":1.8,"stroke-dasharray":"7 4"}));
+
+  const gp=el('path',{d:path('g'),fill:'none',stroke:'var(--gyeonggi)',
+    "stroke-width":2.8,"stroke-linejoin":"round","stroke-linecap":"round"});
+  gp.setAttribute('class','anim');s.appendChild(gp);
+
+  D.forEach((d,i)=>{
+    const peak=(d.y===2013||d.y===2020||d.y===2024);
+    s.appendChild(el('circle',{cx:X(i),cy:Y(d.g),r:peak?4.2:2.4,
+      fill:peak?'var(--gyeonggi)':'var(--card)',stroke:'var(--gyeonggi)',"stroke-width":2}));
+    if(peak){
+      const t=el('text',{x:X(i),y:Y(d.g)+(d.y===2020?22:-13),"text-anchor":"middle"});
+      t.setAttribute('class','val-lbl');t.textContent=d.g.toFixed(2);s.appendChild(t);
+    }
+  });
+}
+
+function renderRank(){
+  const s=document.getElementById('rank');s.innerHTML='';
+  const RH=190,RM={t:22,r:96,b:34,l:52},rw=900-RM.l-RM.r,rh=RH-RM.t-RM.b;
+  const rx=i=>RM.l+(i/(D.length-1))*rw;
+  const ry=v=>RM.t+((v-1)/16)*rh;
+
+  [1,9,17].forEach(v=>{
+    s.appendChild(el('line',{x1:RM.l,x2:RM.l+rw,y1:ry(v),y2:ry(v),
+      stroke:'var(--rule)',"stroke-width":1}));
+    const t=el('text',{x:RM.l-11,y:ry(v)+4,"text-anchor":"end"});
+    t.setAttribute('class','ax');t.textContent=v+'위';s.appendChild(t);
+  });
+
+  s.appendChild(el('path',{d:D.map((d,i)=>(i?'L':'M')+rx(i)+' '+ry(d.r)).join(' '),
+    fill:'none',stroke:'var(--gyeonggi)',"stroke-width":2,opacity:.85,
+    "stroke-linejoin":"round"}));
+
+  D.forEach((d,i)=>{
+    s.appendChild(el('circle',{cx:rx(i),cy:ry(d.r),r:d.n===16?3:2.6,
+      fill:d.n===16?'var(--card)':'var(--gyeonggi)',
+      stroke:'var(--gyeonggi)',"stroke-width":d.n===16?1.6:0}));
+    if(i%2===0||i===D.length-1){
+      const t=el('text',{x:rx(i),y:RM.t+rh+22,"text-anchor":"middle"});
+      t.setAttribute('class','ax');t.textContent=d.y;s.appendChild(t);
+    }
+  });
+
+  const a=el('text',{x:RM.l+rw+8,y:ry(17)+4});
+  a.setAttribute('class','ann');a.textContent='속 빈 점 = N16 (세종 미출범)';
+  s.appendChild(a);
+}
+
+const bL=document.getElementById('btn-legal'),bD=document.getElementById('btn-data');
+function mode(legal){
+  yMax=legal?45:22;
+  bL.setAttribute('aria-pressed',legal);bD.setAttribute('aria-pressed',!legal);
+  render();
+}
+bL.onclick=()=>mode(true);
+bD.onclick=()=>mode(false);
+mode(true);renderRank();
+</script>
+</body>
+</html>
